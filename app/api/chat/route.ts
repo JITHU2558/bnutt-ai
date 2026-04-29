@@ -1,57 +1,43 @@
-import { NextRequest } from "next/server";
+export const runtime = "edge";
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   const { messages } = await req.json();
 
-  const prompt = messages.map((m: any) => m.content).join("\n");
+  const systemPrompt = {
+    role: "system",
+    content: `
+You are an AI assistant.
 
-  const ollamaRes = await fetch("http://localhost:11434/api/generate", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: "llama3",
-      prompt,
-      stream: true,
-    }),
-  });
+If the user asks to create a task or reminder,
+respond ONLY in JSON format like this:
 
-  const reader = ollamaRes.body!.getReader();
-  const decoder = new TextDecoder();
+{
+  "type": "task",
+  "title": "task title"
+}
 
-  let fullText = "";
+Do NOT use "reminder" or other types.
+Do NOT add explanation text.
 
-  const stream = new ReadableStream({
-    async start(controller) {
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
+If it's not a task, respond normally.
+`,
+  };
 
-        const chunk = decoder.decode(value);
-        const lines = chunk.split("\n").filter(Boolean);
+  const response = await fetch(
+    "https://api.groq.com/openai/v1/chat/completions",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "llama-3.1-8b-instant",
+        messages: [systemPrompt, ...messages],
+        stream: true,
+      }),
+    }
+  );
 
-        for (const line of lines) {
-          try {
-            const json = JSON.parse(line);
-
-            if (json.response) {
-              fullText += json.response;
-
-              // ✅ Send only clean text
-              controller.enqueue(
-                new TextEncoder().encode(json.response)
-              );
-            }
-          } catch (err) {
-            // ignore bad JSON
-          }
-        }
-      }
-
-      controller.close();
-    },
-  });
-
-  return new Response(stream);
+  return new Response(response.body);
 }
