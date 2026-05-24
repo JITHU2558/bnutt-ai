@@ -1,47 +1,78 @@
 # 🚀 BNutt AI – Smart AI Assistant with Task Management
 
-BNutt AI is a full-stack AI-powered assistant built using Next.js, Supabase, and local AI models. It combines conversational AI with task management, allowing users to interact naturally while automatically creating and managing tasks.
+BNutt AI is a full-stack AI-powered assistant built using Next.js 16, React 19, Supabase, and Groq AI.  
+It combines conversational AI with task management, voice input, markdown rendering, and mobile support.
 
 ---
 
-## ✨ Features
+# 🌐 Live Demo
 
-* 💬 Real-time AI chat (streaming responses)
-* 🧠 Local AI integration (Ollama – llama3)
-* 🔐 User authentication (Supabase Auth)
-* 📝 AI-powered task creation
-* 📦 Task storage with database (Supabase)
-* ✅ Task management (Create, Update, Delete)
-* 🧑‍💻 Multi-user support with secure access (RLS)
-* 📄 Markdown rendering in chat
+https://bnutt-ai.vercel.app
 
 ---
 
-## 🏗️ Tech Stack
+# ✨ Features
 
-* **Frontend:** Next.js (App Router), React, Tailwind CSS
-* **Backend:** Next.js API routes
-* **Database:** Supabase (PostgreSQL)
-* **Auth:** Supabase Auth
-* **AI Model:** Ollama (llama3, local)
-* **Deployment:** Vercel
+- 💬 Real-time AI chat
+- 🧠 Groq AI integration using llama-3.1-8b-instant
+- 🔐 Google OAuth authentication with Supabase Auth
+- 📝 AI-powered task creation and management
+- 📦 Persistent chat history storage
+- ✅ Task management system
+- 🎤 Voice input using Web Speech API
+- 📄 Markdown rendering with GitHub Flavored Markdown
+- 🖼️ Image upload support
+- 📱 Android mobile app using Capacitor
+- 🧑‍💻 Multi-user secure access with Row Level Security (RLS)
+- ⚡ Fast deployment on Vercel
+- 🛡️ Secure backend API routes
 
 ---
 
-## 📁 Project Structure
+# 🏗️ Tech Stack
 
-```
-ai-assistant/
+## Frontend
+- Next.js 16
+- React 19
+- TypeScript
+- Tailwind CSS
+
+## Backend
+- Next.js API Routes
+- Supabase
+- PostgreSQL
+
+## AI
+- Groq API
+- llama-3.1-8b-instant
+
+## Mobile
+- Capacitor Android
+
+## Deployment
+- Vercel
+
+---
+
+# 📁 Project Structure
+
+```txt
+bnutt-ai/
 ├── app/
-│   ├── api/chat/route.ts
-│   ├── login/page.tsx
+│   ├── api/
+│   │   └── chat/
+│   │       └── route.ts
+│   ├── login/
+│   │   └── page.tsx
 │   ├── Chat.tsx
 │   ├── page.tsx
 │   ├── layout.tsx
 │   └── globals.css
+├── components/
 ├── lib/
 │   └── supabase.ts
 ├── public/
+├── android/
 ├── .env.local
 ├── package.json
 └── README.md
@@ -49,53 +80,136 @@ ai-assistant/
 
 ---
 
-## ⚙️ Environment Variables
+# ⚙️ Environment Variables
 
 Create a `.env.local` file:
 
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+
+GROQ_API_KEY=your_groq_api_key
 ```
-NEXT_PUBLIC_SUPABASE_URL=your_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_key
+
+---
+
+# 🚀 Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/yourusername/bnutt-ai.git
+```
+
+Go to project folder:
+
+```bash
+cd bnutt-ai
+```
+
+Install dependencies:
+
+```bash
+npm install
 ```
 
 ---
 
-## 🧠 How It Works
+# ▶️ Run Development Server
 
-1. User sends message via chat UI
-2. Message is sent to `/api/chat`
-3. AI model (Ollama) generates response
-4. Response is streamed back to UI
-5. If structured task is detected → saved to database
+```bash
+npm run dev
+```
 
----
+Open:
 
-## 🔒 Security
-
-* Row Level Security (RLS) enabled
-* Users can only access their own tasks
-* Secure Supabase authentication
+```txt
+http://localhost:3000
+```
 
 ---
 
-## ⚠️ Limitations
+# 🏭 Production Build
 
-* Ollama works locally (not deployable on Vercel)
-* No long-term memory yet
-* Limited AI capability compared to GPT-4
-
----
-
-## 🚀 Future Improvements
-
-* Add AI memory (conversation history)
-* Integrate external APIs (weather, calendar, etc.)
-* Replace local AI with hosted model
-* Mobile app version
-* Smart task prioritization
+```bash
+npm run build
+```
 
 ---
 
-## 🧑‍💻 Author
+# 📱 Android Build (Capacitor)
+
+```bash
+npm run build
+
+npx cap sync android
+
+npx cap open android
+```
+
+---
+
+# 🧠 How It Works
+
+1. User logs in using Google OAuth
+2. Messages are sent through secure backend API routes
+3. Groq AI generates responses
+4. Responses are rendered with markdown support
+5. Chats and tasks are stored in Supabase
+6. Voice input and image upload enhance interaction
+
+---
+
+# 🔒 Security
+
+- Secure backend AI API handling
+- Environment variable protection
+- Row Level Security (RLS) enabled
+- Users can only access their own data
+- Protected authentication flow
+
+---
+
+# 🛠️ Challenges Solved
+
+- Fixed authentication redirect loop using auth loading state
+- Fixed React and React DOM version conflicts
+- Resolved broken package.json dependency issues
+- Moved Groq API calls from frontend to backend for security
+- Fixed API parsing causing “No response” issues
+- Solved Vercel deployment size limitations
+- Fixed Android Gradle Proguard build errors
+- Fixed Next.js build issues caused by Android generated assets
+
+---
+
+# ⚠️ Current Limitations
+
+- No long-term AI memory yet
+- Vision/image understanding still in progress
+- Limited by free-tier AI usage
+
+---
+
+# 🚀 Future Improvements
+
+- AI image understanding
+- Streaming AI responses
+- Semantic memory search
+- Push notifications
+- Offline support
+- Smart task prioritization
+- AI tool calling system
+
+---
+
+# 🧑‍💻 Author
 
 Built by Jithin P Biju
+
+---
+
+# 📄 License
+
+MIT
