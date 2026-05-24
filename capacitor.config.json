@@ -1,0 +1,10 @@
+{
+  "appId": "com.bnutt.ai",
+  "appName": "BNutt AI",
+  "webDir": ".next",
+  "server": {
+    "url": "https://bnutt-ai.vercel.app",
+    "cleartext": false,
+    "androidScheme": "https"
+  }
+}

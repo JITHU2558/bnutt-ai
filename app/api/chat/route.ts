@@ -1,43 +1,67 @@
-export const runtime = "edge";
+import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
-  const { messages } = await req.json();
+  try {
+    const body = await req.json();
+    const messages = body.messages || [];
 
-  const systemPrompt = {
-    role: "system",
-    content: `
-You are an AI assistant.
-
-If the user asks to create a task or reminder,
-respond ONLY in JSON format like this:
-
-{
-  "type": "task",
-  "title": "task title"
+    // ✅ Safety check
+    if (!messages.length) {
+      return NextResponse.json(
+        { reply: "No messages provided" },
+        { status: 400 }
+      );
+    }
+    if (!process.env.GROQ_API_KEY) {
+  return NextResponse.json(
+    { reply: "Missing GROQ API key" },
+    { status: 500 }
+  );
 }
 
-Do NOT use "reminder" or other types.
-Do NOT add explanation text.
+    const response = await fetch(
+      "https://api.groq.com/openai/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+        },
+        body: JSON.stringify({
+          model: "llama-3.1-8b-instant",
+          messages: messages,
+          temperature: 0.7,
+        }),
+      }
+    );
 
-If it's not a task, respond normally.
-`,
-  };
+    // ✅ Handle HTTP errors
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("GROQ HTTP ERROR:", errorText);
 
-  const response = await fetch(
-    "https://api.groq.com/openai/v1/chat/completions",
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "llama-3.1-8b-instant",
-        messages: [systemPrompt, ...messages],
-        stream: true,
-      }),
+      return NextResponse.json(
+        { reply: "AI service error" },
+        { status: 500 }
+      );
     }
-  );
 
-  return new Response(response.body);
+    const data = await response.json();
+
+    console.log("GROQ RESPONSE:", data);
+
+    const reply =
+      data?.choices?.[0]?.message?.content ||
+      "No response from AI";
+
+    return NextResponse.json({ reply });
+
+  } catch (error) {
+    console.error("API ERROR:", error);
+
+    return NextResponse.json(
+      { reply: "Something went wrong in API" },
+      { status: 500 }
+    );
+  }
 }

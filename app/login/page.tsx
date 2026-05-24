@@ -1,40 +1,38 @@
 "use client";
 
-import { useState } from "react";
-import { supabase } from "../../lib/supabase";
+import { supabase } from "@/lib/supabase";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Login() {
-  const [email, setEmail] = useState("");
+  const router = useRouter();
 
-  const handleLogin = async () => {
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
+  // ✅ AUTO REDIRECT IF ALREADY LOGGED IN
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user) {
+        router.push("/");
+      }
     });
+  }, []);
 
-    if (error) {
-      alert(error.message);
-    } else {
-      alert("Check your email!");
-    }
-  };
-
+  // ✅ LOGIN WITH PROPER REDIRECT
+ const login = async () => {
+  await supabase.auth.signInWithOAuth({
+  provider: "google",
+  options: {
+    redirectTo: window.location.origin,
+  },
+});
+};
   return (
-    <div className="flex h-screen items-center justify-center bg-black text-white">
-      <div className="p-6 bg-gray-900 rounded">
-        <h1 className="mb-4 text-xl">Login</h1>
-
-        <input
-          type="email"
-          placeholder="Email"
-          className="p-2 w-full mb-3 bg-gray-800"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-
-        <button onClick={handleLogin} className="bg-blue-500 p-2 w-full">
-          Send Magic Link
-        </button>
-      </div>
+    <div className="flex h-screen items-center justify-center bg-[#0f172a] text-white">
+      <button
+        onClick={login}
+        className="bg-blue-600 px-6 py-3 rounded-xl"
+      >
+        Login with Google
+      </button>
     </div>
   );
 }
