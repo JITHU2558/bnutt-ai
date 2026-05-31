@@ -291,122 +291,180 @@ let aiText =
     return <div className="p-10 text-white">Loading...</div>;
   }
 
-  return (
-    <div className="flex h-screen bg-[#0f172a] text-white">
+ return (
+  <div className="flex flex-col md:flex-row min-h-[100dvh] bg-[#0f172a] text-white overflow-hidden">
 
-      {/* TASK SIDEBAR */}
-      <div className="w-72 bg-[#020617] p-4 border-r border-gray-800 flex flex-col">
-        <h2 className="text-lg font-bold mb-4">Tasks</h2>
+    {/* MOBILE TASK HEADER */}
+    <div className="md:hidden border-b border-gray-800 bg-[#020617] px-4 py-3">
+      <h2 className="text-lg font-bold">BNutt AI</h2>
+    </div>
 
-        <button onClick={clearTasks} className="text-xs text-red-400 mb-4">
-          Clear Tasks
+    {/* TASK SIDEBAR */}
+    <div className="w-full md:w-72 bg-[#020617] border-b md:border-b-0 md:border-r border-gray-800 flex flex-col max-h-[220px] md:max-h-none">
+
+      <div className="p-4 flex items-center justify-between">
+        <h2 className="text-lg font-bold">Tasks</h2>
+
+        <button
+          onClick={clearTasks}
+          className="text-xs text-red-400"
+        >
+          Clear
         </button>
+      </div>
 
-        <div className="flex-1 overflow-y-auto">
-          {tasks.map((task) => (
-            <div key={task.id} className="flex justify-between mb-2 text-sm">
+      <div className="flex-1 overflow-y-auto px-4 pb-4">
+        {tasks.length === 0 ? (
+          <p className="text-sm text-gray-400">
+            No tasks yet
+          </p>
+        ) : (
+          tasks.map((task) => (
+            <div
+              key={task.id}
+              className="flex items-center justify-between mb-3 text-sm bg-[#0f172a] rounded-xl px-3 py-2"
+            >
               <span
                 onClick={() => toggleTask(task)}
-                className={`cursor-pointer ${
-                  task.completed ? "line-through text-gray-500" : ""
+                className={`cursor-pointer flex-1 ${
+                  task.completed
+                    ? "line-through text-gray-500"
+                    : ""
                 }`}
               >
                 {task.title}
               </span>
 
-              <button onClick={() => deleteTask(task.id)}>✕</button>
+              <button
+                onClick={() => deleteTask(task.id)}
+                className="ml-3 text-red-400"
+              >
+                ✕
+              </button>
             </div>
-          ))}
-        </div>
+          ))
+        )}
+      </div>
+    </div>
+
+    {/* CHAT AREA */}
+    <div className="flex-1 flex flex-col min-h-0">
+
+      {/* HEADER */}
+      <div className="hidden md:flex items-center justify-between px-6 py-4 border-b border-gray-800 bg-[#020617]">
+        <h1 className="text-xl font-semibold">
+          BNutt AI
+        </h1>
+
+        <button
+          onClick={clearChat}
+          className="text-red-400 text-sm"
+        >
+          Clear Chat
+        </button>
       </div>
 
-      {/* CHAT */}
-      <div className="flex-1 flex flex-col">
+      {/* MESSAGES */}
+      <div className="flex-1 overflow-y-auto px-3 sm:px-4 md:px-6 py-4 space-y-4 pb-36">
 
-        {/* HEADER */}
-        <div className="flex justify-between px-6 py-3 border-b border-gray-800">
-          <h1>BNutt AI</h1>
-          <button onClick={clearChat} className="text-red-400">
-            Clear Chat
-          </button>
-        </div>
-
-        {/* MESSAGES */}
-        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
-          {messages.map((m, i) => (
+        {messages.map((m, i) => (
+          <div
+            key={i}
+            className={`flex ${
+              m.role === "user"
+                ? "justify-end"
+                : "justify-start"
+            }`}
+          >
             <div
-              key={i}
-              className={`flex ${
-                m.role === "user" ? "justify-end" : "justify-start"
+              className={`max-w-[88%] sm:max-w-[75%] px-4 py-3 rounded-2xl text-sm leading-relaxed shadow-sm ${
+                m.role === "user"
+                  ? "bg-blue-600"
+                  : "bg-[#1e293b]"
               }`}
             >
-              <div
-                className={`max-w-xl px-4 py-3 rounded-xl ${
-                  m.role === "user"
-                    ? "bg-blue-600"
-                    : "bg-[#1e293b]"
-                }`}
-              >
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {m.content}
-                </ReactMarkdown>
-              </div>
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {m.content}
+              </ReactMarkdown>
             </div>
-          ))}
-          <div ref={bottomRef} />
-        </div>
+          </div>
+        ))}
 
-        {/* IMAGE */}
-        {image && (
-          <div className="px-6">
-            <img
-              src={URL.createObjectURL(image)}
-              className="w-32 rounded mb-2"
-            />
+        {loading && (
+          <div className="text-sm text-gray-400">
+            BNutt AI is thinking...
           </div>
         )}
 
-        {/* INPUT */}
-        <div className="p-4 border-t border-gray-800 bg-[#020617]">
-          <div className="flex gap-2 max-w-3xl mx-auto">
+        <div ref={bottomRef} />
+      </div>
 
-            <button
-              onClick={startListening}
-              className={`px-3 rounded-xl ${
-                listening ? "bg-red-500" : "bg-gray-700"
-              }`}
-            >
-              🎤
-            </button>
+      {/* IMAGE PREVIEW */}
+      {image && (
+        <div className="px-4 pb-2">
+          <img
+            src={URL.createObjectURL(image)}
+            className="w-24 h-24 object-cover rounded-xl border border-gray-700"
+          />
+        </div>
+      )}
 
+      {/* INPUT AREA */}
+      <div className="sticky bottom-0 border-t border-gray-800 bg-[#020617]/95 backdrop-blur-md px-3 py-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
+
+        <div className="flex items-end gap-2 max-w-4xl mx-auto">
+
+          {/* VOICE */}
+          <button
+            onClick={startListening}
+            className={`h-11 w-11 rounded-full flex items-center justify-center text-lg ${
+              listening
+                ? "bg-red-500"
+                : "bg-[#1e293b]"
+            }`}
+          >
+            🎤
+          </button>
+
+          {/* IMAGE */}
+          <label className="h-11 w-11 rounded-full bg-[#1e293b] flex items-center justify-center cursor-pointer text-lg">
+            🖼️
             <input
               type="file"
               accept="image/*"
               onChange={(e) =>
                 setImage(e.target.files?.[0] || null)
               }
-              className="text-sm"
+              className="hidden"
             />
+          </label>
 
-            <input
-              className="flex-1 p-3 rounded-xl bg-[#1e293b]"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Message BNutt AI..."
-              onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-            />
+          {/* TEXT INPUT */}
+          <textarea
+            className="flex-1 resize-none rounded-2xl bg-[#1e293b] px-4 py-3 text-sm outline-none min-h-[48px] max-h-40 overflow-y-auto"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Message BNutt AI..."
+            rows={1}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+              }
+            }}
+          />
 
-            <button
-              onClick={sendMessage}
-              className="bg-blue-600 px-5 rounded-xl"
-            >
-              {loading ? "..." : "Send"}
-            </button>
+          {/* SEND */}
+          <button
+            onClick={sendMessage}
+            className="h-11 px-5 rounded-2xl bg-blue-600 text-sm font-medium"
+          >
+            {loading ? "..." : "Send"}
+          </button>
 
-          </div>
         </div>
-
       </div>
     </div>
-  );
+  </div>
+);
 }
