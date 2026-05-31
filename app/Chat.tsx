@@ -30,6 +30,7 @@ export default function Chat() {
   const router = useRouter();
   const [listening, setListening] = useState(false);
   const [image, setImage] = useState<File | null>(null);
+  const [showSidebar, setShowSidebar] = useState(false);
   const bottomRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -294,59 +295,105 @@ let aiText =
  return (
   <div className="flex flex-col md:flex-row min-h-[100dvh] bg-[#0f172a] text-white overflow-hidden">
 
-    {/* MOBILE TASK HEADER */}
-    <div className="md:hidden border-b border-gray-800 bg-[#020617] px-4 py-3">
-      <h2 className="text-lg font-bold">BNutt AI</h2>
-    </div>
+    {/* MOBILE HEADER */}
+<div className="md:hidden border-b border-gray-800 bg-[#020617] px-4 py-3 flex items-center justify-between">
+  <button
+    onClick={() => setShowSidebar(true)}
+    className="text-xl"
+  >
+    ☰
+  </button>
+
+  <h2 className="text-lg font-bold">
+    BNutt AI
+  </h2>
+
+  <button
+    onClick={clearChat}
+    className="text-red-400 text-sm"
+  >
+    Clear
+  </button>
+</div>
 
     {/* TASK SIDEBAR */}
-    <div className="w-full md:w-72 bg-[#020617] border-b md:border-b-0 md:border-r border-gray-800 flex flex-col max-h-[220px] md:max-h-none">
+    <>
+  {showSidebar && (
+    <div
+      className="fixed inset-0 bg-black/60 z-40 md:hidden"
+      onClick={() => setShowSidebar(false)}
+    />
+  )}
 
-      <div className="p-4 flex items-center justify-between">
-        <h2 className="text-lg font-bold">Tasks</h2>
+  <div
+    className={`
+      fixed md:relative
+      top-0 left-0
+      h-full
+      w-72
+      bg-[#020617]
+      border-r border-gray-800
+      z-50
+      transform transition-transform duration-300
+      ${showSidebar ? "translate-x-0" : "-translate-x-full"}
+      md:translate-x-0
+      flex flex-col
+    `}
+  >
+    <div className="p-4 flex items-center justify-between">
+      <h2 className="text-lg font-bold">Tasks</h2>
 
-        <button
-          onClick={clearTasks}
-          className="text-xs text-red-400"
-        >
-          Clear
-        </button>
-      </div>
-
-      <div className="flex-1 overflow-y-auto px-4 pb-4">
-        {tasks.length === 0 ? (
-          <p className="text-sm text-gray-400">
-            No tasks yet
-          </p>
-        ) : (
-          tasks.map((task) => (
-            <div
-              key={task.id}
-              className="flex items-center justify-between mb-3 text-sm bg-[#0f172a] rounded-xl px-3 py-2"
-            >
-              <span
-                onClick={() => toggleTask(task)}
-                className={`cursor-pointer flex-1 ${
-                  task.completed
-                    ? "line-through text-gray-500"
-                    : ""
-                }`}
-              >
-                {task.title}
-              </span>
-
-              <button
-                onClick={() => deleteTask(task.id)}
-                className="ml-3 text-red-400"
-              >
-                ✕
-              </button>
-            </div>
-          ))
-        )}
-      </div>
+      <button
+        onClick={() => setShowSidebar(false)}
+        className="md:hidden text-xl"
+      >
+        ✕
+      </button>
     </div>
 
+    <div className="px-4 mb-4">
+      <button
+        onClick={clearTasks}
+        className="text-xs text-red-400"
+      >
+        Clear Tasks
+      </button>
+    </div>
+
+    <div className="flex-1 overflow-y-auto px-4 pb-4">
+      {tasks.length === 0 ? (
+        <p className="text-sm text-gray-400">
+          No tasks yet
+        </p>
+      ) : (
+        tasks.map((task) => (
+          <div
+            key={task.id}
+            className="flex items-center justify-between mb-3 text-sm bg-[#0f172a] rounded-xl px-3 py-2"
+          >
+            <span
+              onClick={() => toggleTask(task)}
+              className={`cursor-pointer flex-1 ${
+                task.completed
+                  ? "line-through text-gray-500"
+                  : ""
+              }`}
+            >
+              {task.title}
+            </span>
+
+            <button
+              onClick={() => deleteTask(task.id)}
+              className="ml-3 text-red-400"
+            >
+              ✕
+            </button>
+          </div>
+        ))
+      )}
+    </div>
+  </div>
+</>
     {/* CHAT AREA */}
     <div className="flex-1 flex flex-col min-h-0">
 
