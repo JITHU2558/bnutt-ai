@@ -327,18 +327,19 @@ let aiText =
 
   <div
     className={`
-      fixed md:relative
-      top-0 left-0
-      h-full
-      w-[85vw] max-w-72 md:w-72
-      bg-[#020617]
-      border-r border-gray-800
-      z-50
-      transform transition-transform duration-300
-      ${showSidebar ? "translate-x-0" : "-translate-x-full"}
-      md:translate-x-0
-      flex flex-col
-    `}
+  fixed md:relative
+  top-0 left-0
+  h-screen md:h-auto
+  w-[85vw] max-w-72 md:w-72
+  bg-[#020617]
+  border-r border-gray-800
+  z-50
+  transition-transform duration-300
+  ${showSidebar ? "translate-x-0" : "-translate-x-full"}
+  md:translate-x-0 md:transform-none
+  flex flex-col
+  shrink-0
+`}
   >
     <div className="p-4 flex items-center justify-between">
       <h2 className="text-lg font-bold">Tasks</h2>
