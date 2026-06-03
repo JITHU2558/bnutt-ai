@@ -293,7 +293,7 @@ let aiText =
   }
 
  return (
-  <div className="flex flex-col md:flex-row min-h-[100dvh] bg-[#0f172a] text-white overflow-hidden">
+  <div className="flex flex-col md:flex-row h-screen bg-[#0f172a] text-white overflow-hidden">
 
     {/* MOBILE HEADER */}
 <div className="md:hidden border-b border-gray-800 bg-[#020617] px-4 py-3 flex items-center justify-between">
