@@ -330,7 +330,7 @@ let aiText =
       fixed md:relative
       top-0 left-0
       h-full
-      w-72
+      w-[85vw] max-w-72 md:w-72
       bg-[#020617]
       border-r border-gray-800
       z-50
